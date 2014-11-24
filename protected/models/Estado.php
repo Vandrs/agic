@@ -52,7 +52,7 @@ class Estado extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'ID_ESTADO' => 'Id Estado',
+			'ID_ESTADO' => 'Estado',
 			'COD_ESTADO' => 'Cod Estado',
 			'DESCRICAO_ESTADO' => 'Descricao Estado',
 		);

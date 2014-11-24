@@ -47,7 +47,7 @@ $this->widget('booster.widgets.TbNavbar',array(
 	<div class="clear"></div>
 
 	<div id="footer">
-            <strong>AGIC</strong> | <?php echo Yii::powered(); ?>
+            <strong>AGIC</strong>
 	</div><!-- footer -->
 </div><!-- page -->
 </body>

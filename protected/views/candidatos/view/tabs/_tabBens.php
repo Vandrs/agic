@@ -13,7 +13,7 @@ $this->widget('booster.widgets.TbGridView',array(
                 ),
             array(
                     'name'  => 'Valor',
-                    'value' => 'Utils::moneyMask($data["VALOR_BEM"])'
+                    'value' => 'Utils::ifEmptyThen(Utils::moneyMask($data["VALOR_BEM"]),"Não declarado")'
                 ),
 	)
 ));

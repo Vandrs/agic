@@ -5,6 +5,11 @@
  *
  * The followings are the available columns in table 'DIM_CANDIDATO':
  * @property integer $ID_CANDIDATO
+ * @property integer $ID_CARGO
+ * @property integer $ID_ESTADO
+ * @property integer $ID_LEGENDA
+ * @property integer $ID_PARTIDO
+ * @property integer $ID_SITUACAO_CANDIDATURA
  * @property string $CODIGO_CANDIDATO
  * @property string $NOME_CANDIDATO
  * @property integer $NUMERO_CANDIDATO
@@ -23,6 +28,11 @@
  */
 class Candidato extends CActiveRecord
 {
+        private $strPartido;
+        private $strEstadoConcorrendo;
+        private $strCargo;
+        private $fotoCandidato;
+        
 	/**
 	 * @return string the associated database table name
 	 */
@@ -39,7 +49,7 @@ class Candidato extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('NUMERO_CANDIDATO, IDADE', 'numerical', 'integerOnly'=>true),
+			array('ID_CARGO, ID_ESTADO, ID_LEGENDA, ID_PARTIDO, ID_SITUACAO_CANDIDATURA, NUMERO_CANDIDATO, IDADE', 'numerical', 'integerOnly'=>true),
 			array('CODIGO_CANDIDATO', 'length', 'max'=>50),
 			array('NOME_CANDIDATO, NOME_URNA_CANDIDATO, DESCRICAO_OCUPACAO, DESCRICAO_GRAU_INSTRUCAO, DESCRICAO_ESTADO_CIVIL, DESCRICAO_COR_RACA, DESCRICAO_NACIONALIDADE, NOME_MUNICIPIO_NASCIMENTO', 'length', 'max'=>100),
 			array('DATA_NASCIMENTO, DESCRICAO_SEXO', 'length', 'max'=>10),
@@ -47,8 +57,7 @@ class Candidato extends CActiveRecord
 			array('NUM_TITULO_ELEITORAL', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('ID_CANDIDATO, CODIGO_CANDIDATO, NOME_CANDIDATO, NUMERO_CANDIDATO, NOME_URNA_CANDIDATO, DESCRICAO_OCUPACAO, DATA_NASCIMENTO, NUM_TITULO_ELEITORAL, IDADE, DESCRICAO_SEXO, DESCRICAO_GRAU_INSTRUCAO, DESCRICAO_ESTADO_CIVIL, DESCRICAO_COR_RACA, DESCRICAO_NACIONALIDADE, SIGLA_UF_NASCIMENTO, NOME_MUNICIPIO_NASCIMENTO', 'safe', 'on'=>'search'),
-                        array('NOME_CANDIDATO','safe','on'=>'searchCandidato'),
+			array('ID_CANDIDATO, ID_CARGO, ID_ESTADO, ID_LEGENDA, ID_PARTIDO, ID_SITUACAO_CANDIDATURA, CODIGO_CANDIDATO, NOME_CANDIDATO, NUMERO_CANDIDATO, NOME_URNA_CANDIDATO, DESCRICAO_OCUPACAO, DATA_NASCIMENTO, NUM_TITULO_ELEITORAL, IDADE, DESCRICAO_SEXO, DESCRICAO_GRAU_INSTRUCAO, DESCRICAO_ESTADO_CIVIL, DESCRICAO_COR_RACA, DESCRICAO_NACIONALIDADE, SIGLA_UF_NASCIMENTO, NOME_MUNICIPIO_NASCIMENTO', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -69,22 +78,27 @@ class Candidato extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'ID_CANDIDATO' => 'Id Candidato',
-			'CODIGO_CANDIDATO' => 'Código Candidato',
+			'ID_CANDIDATO' => 'Candidato',
+			'ID_CARGO' => 'Cargo',
+			'ID_ESTADO' => 'Estado',
+			'ID_LEGENDA' => 'Legenda',
+			'ID_PARTIDO' => 'Partido',
+			'ID_SITUACAO_CANDIDATURA' => 'Situação da candidatura',
+			'CODIGO_CANDIDATO' => 'Codigo do candidato',
 			'NOME_CANDIDATO' => 'Nome',
-			'NUMERO_CANDIDATO' => 'Número Candidato',
-			'NOME_URNA_CANDIDATO' => 'Nome Urna Candidato',
-			'DESCRICAO_OCUPACAO' => 'Descricao Ocupacao',
-			'DATA_NASCIMENTO' => 'Data Nascimento',
-			'NUM_TITULO_ELEITORAL' => 'Num Titulo Eleitoral',
+			'NUMERO_CANDIDATO' => 'Número',
+			'NOME_URNA_CANDIDATO' => 'Nome urna',
+			'DESCRICAO_OCUPACAO' => 'Ocupação',
+			'DATA_NASCIMENTO' => 'Data de nascimento',
+			'NUM_TITULO_ELEITORAL' => 'Título eleitoral',
 			'IDADE' => 'Idade',
-			'DESCRICAO_SEXO' => 'Descricao Sexo',
-			'DESCRICAO_GRAU_INSTRUCAO' => 'Descricao Grau Instrucao',
-			'DESCRICAO_ESTADO_CIVIL' => 'Descricao Estado Civil',
-			'DESCRICAO_COR_RACA' => 'Descricao Cor Raca',
-			'DESCRICAO_NACIONALIDADE' => 'Descricao Nacionalidade',
-			'SIGLA_UF_NASCIMENTO' => 'Sigla Uf Nascimento',
-			'NOME_MUNICIPIO_NASCIMENTO' => 'Nome Municipio Nascimento',
+			'DESCRICAO_SEXO' => 'Sexo',
+			'DESCRICAO_GRAU_INSTRUCAO' => 'Grau de instrução',
+			'DESCRICAO_ESTADO_CIVIL' => 'Estado civil',
+			'DESCRICAO_COR_RACA' => 'Cor/Raça',
+			'DESCRICAO_NACIONALIDADE' => 'Nacionalidade',
+			'SIGLA_UF_NASCIMENTO' => 'UF de nascimento',
+			'NOME_MUNICIPIO_NASCIMENTO' => 'Município de nascimento',
 		);
 	}
 
@@ -100,46 +114,59 @@ class Candidato extends CActiveRecord
 	 * @return CActiveDataProvider the data provider that can return the models
 	 * based on the search/filter conditions.
 	 */
-	public function search($idCargo,$idPartido,$idEstado)
+        
+	public function search()
 	{
 		// @todo Please modify the following code to remove attributes that should not be searched.
-
-		$criteria= new CDbCriteria;
-
+                $criteria = new CDbCriteria();
+            
                 $criteria->distinct = true;
-                $criteria->select = "[t].ID_CANDIDATO, NOME_CANDIDATO, NOME_URNA_CANDIDATO, NUMERO_CANDIDATO, DESCRICAO_OCUPACAO ";
+                $criteria->select = " ID_CANDIDATO, NOME_CANDIDATO, NOME_URNA_CANDIDATO, NUMERO_CANDIDATO, CODIGO_CANDIDATO ";
+                $criteria->condition = " ID_PARTIDO IS NOT NULL AND ID_PARTIDO <> 0 ";
                 
-                $criteria->compare('NOME_CANDIDATO',$this->NOME_CANDIDATO, true);
+                $params = array();
                 
-                if(!empty($idCargo) || !empty($idPartido) || !empty($idEstado)){
-                    $criteria->join = " JOIN FATO_BENS ON FATO_BENS.ID_CANDIDATO = [t].ID_CANDIDATO ";
-                    $params = array();
-                    if(!empty($idCargo)){
-                        $criteria->addCondition(" FATO_BENS.ID_CARGO = :ID_CARGO ");
-                        $params[":ID_CARGO"] = $idCargo;
-                    }
-                    
-                    if(!empty($idPartido)){
-                        $criteria->addCondition(" FATO_BENS.ID_PARTIDO = :ID_PARTIDO ");
-                        $params[":ID_PARTIDO"] = $idPartido;
-                    }
-                    
-                    if(!empty($idEstado)){
-                        $criteria->addCondition(" FATO_BENS.ID_ESTADO = :ID_ESTADO ");
-                        $params[":ID_ESTADO"] = $idEstado;
-                    }
-                    
-                    $criteria->params = $params;
+                if(!empty($this->NOME_CANDIDATO)){
+                    $criteria->addCondition(' NOME_CANDIDATO LIKE :NOME ');
+                    $params[":NOME"] = "%".$this->NOME_CANDIDATO."%";
                 }
-
                 
-		return new CActiveDataProvider($this, array(
+                if(!empty($this->NOME_URNA_CANDIDATO)){
+                    $criteria->addCondition(' NOME_URNA_CANDIDATO LIKE :NOME_URNA_CANDIDATO ');
+                    $params[":NOME_URNA_CANDIDATO"] = "%".$this->NOME_URNA_CANDIDATO."%";
+                }
+                
+                if(!empty($this->ID_CARGO)){
+                    $criteria->addCondition(" ID_CARGO = :ID_CARGO ");
+                    $params[":ID_CARGO"] = $this->ID_CARGO;
+                }
+                
+                if(!empty($this->ID_ESTADO)){
+                    $criteria->addCondition(" ID_ESTADO = :ID_ESTADO ");
+                    $params[":ID_ESTADO"] = $this->ID_ESTADO;
+                }
+                
+                if(!empty($this->ID_PARTIDO)){
+                    $criteria->addCondition(" ID_PARTIDO = :ID_PARTIDO ");
+                    $params[":ID_PARTIDO"] = $this->ID_PARTIDO;
+                }
+                
+                $criteria->params = $params;
+
+                return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
+                        'sort'=>array(
+                            'attributes'=>array(
+                             'NOME_CANDIDATO', 'NOME_URNA_CANDIDATO'
+                            ),
+                            'defaultOrder'=>array(
+                                'NOME_CANDIDATO' => CSort::SORT_ASC
+                            )
+                        )
 		));
 	}
         
-        public function getBensCandidato(){
-            
+        public function getBensCandidato(){   
             $itemsCount = Yii::app()->db->createCommand(" SELECT COUNT(1) AS QTD FROM FATO_BENS WHERE ID_CANDIDATO = :ID_CANDITADO ")->bindValues(array(":ID_CANDITADO" => $this->ID_CANDIDATO))->queryScalar();
    
             $command = Yii::app()->db->createCommand();
@@ -156,6 +183,80 @@ class Candidato extends CActiveRecord
                                 );
             return $dataProvider;
         }
+        
+        
+        public function afterFind() {
+            parent::afterFind();
+            $this->findStrParamsCandidato();
+            $this->montaCaminhoFotoCandidato();
+        }
+        
+        private function findStrParamsCandidato(){
+            $sql = " SELECT TOP 1 P.SIGLA_PARTIDO,
+                                  E.COD_ESTADO,
+                                  C.DESCRICAO_CARGO
+                             FROM DIM_CANDIDATO F
+                             JOIN DIM_PARTIDO P ON F.ID_PARTIDO = P.ID_PARTIDO
+                             JOIN DIM_ESTADO E ON F.ID_ESTADO = E.ID_ESTADO
+                             JOIN DIM_CARGO C ON F.ID_CARGO = C.ID_CARGO 
+                            WHERE F.ID_CANDIDATO = :ID_CANDIDATO ";
+            
+            $values = array(":ID_CANDIDATO"=>$this->ID_CANDIDATO);
+            
+            $result = Yii::app()->db->createCommand($sql)->bindValues($values)->queryRow();
+            if(!empty($result)){
+                $this->strPartido = $result["SIGLA_PARTIDO"];
+                $this->strEstadoConcorrendo = $result["COD_ESTADO"]; 
+                $this->strCargo = $result["DESCRICAO_CARGO"];
+            }
+        }
+        
+        private function montaCaminhoFotoCandidato(){
+            $this->fotoCandidato = $this->CODIGO_CANDIDATO.".jpg";
+        }
+        
+        public function hasFoto(){
+            return file_exists($this->getPathFotoCandidato());
+        }
+        
+        /* GET E SETS */
+
+        public function getStrPartido(){
+            return $this->strPartido;
+        }
+        
+        public function setStrPartido($strPartido){
+            $this->strPartido = $strPartido;
+        }
+        
+        public function getStrEstadoConcorrendo(){
+            return $this->strEstadoConcorrendo;
+        }
+        
+        public function setStrEstadoConcorrendo($strEstadoConcorrendo){
+            $this->strEstadoConcorrendo = $strEstadoConcorrendo;
+        }
+        
+        public function getStrCargo(){
+            return $this->strCargo;
+        }
+        
+        public function setStrCargo($strCargo){
+            $this->strCargo = $strCargo;
+        }
+
+        public function getPathFotoCandidato(){
+            return $path = Yii::app()->getBasePath()."\\..\\fotos-candidatos\\".$this->strEstadoConcorrendo."\\".$this->fotoCandidato;
+        }
+        
+        public function getUrlPathFotoCandidato(){
+            return Yii::app()->getBaseUrl(true)."/fotos-candidatos/".$this->strEstadoConcorrendo."/".$this->fotoCandidato;
+        }
+        
+        public function setFotoCandidato($fotoCandidato){
+            $this->fotoCandidato = $fotoCandidato;
+        }
+        
 
 	/**
 	 * Returns the static model of the specified AR class.

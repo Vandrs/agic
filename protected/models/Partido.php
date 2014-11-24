@@ -54,7 +54,7 @@ class Partido extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'ID_PARTIDO' => 'Id Partido',
+			'ID_PARTIDO' => 'Partido',
 			'CODIGO_PARTIDO' => 'Codigo Partido',
 			'SIGLA_PARTIDO' => 'Sigla Partido',
 			'NOME_PARTIDO' => 'Nome Partido',

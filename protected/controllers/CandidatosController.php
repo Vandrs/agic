@@ -42,8 +42,10 @@ class CandidatosController extends Controller
 	 */
 	public function actionCandidato($id)
 	{
+            $twitter = new Twitter();
             $this->render('view/view',array(
                 'modelCandidato' => $this->loadModel($id),
+                'twitter' => $twitter,
             ));
 	}
         
@@ -53,37 +55,13 @@ class CandidatosController extends Controller
 	public function actionIndex()
 	{
 		$modelCandidato = new Candidato('search');
-                $modelCargo   = new Cargo('searchCandidato');
-                $modelEstado  = new Estado('searchCandidato');
-                $modelPartido = new Partido('searchCandidato');
-                
-                
                 $modelCandidato->unsetAttributes();
-                $modelCargo->unsetAttributes();
-                $modelEstado->unsetAttributes();
-                $modelPartido->unsetAttributes();
-                        
-                if(isset($_POST['Candidato'])){
-                    $modelCandidato->attributes=$_POST['Candidato'];
-                }
-                
-                if(isset($_POST['Cargo'])){
-                    $modelCargo->attributes=$_POST['Cargo'];
-                }
-                
-                if(isset($_POST['Estado'])){
-                    $modelEstado->attributes=$_POST['Estado'];
-                }
-                
-                if(isset($_POST['Partido'])){
-                    $modelPartido->attributes=$_POST['Partido'];
+                if(isset($_GET['Candidato'])){
+                    $modelCandidato->attributes=$_GET['Candidato'];
                 }
                 
 		$this->render('search/index',array(
-                    'modelCandidato'=>$modelCandidato,
-                    'modelCargo' => $modelCargo,
-                    'modelEstado' => $modelEstado,
-                    'modelPartido' => $modelPartido
+                    'modelCandidato'=>$modelCandidato
 		));
 	}
         
