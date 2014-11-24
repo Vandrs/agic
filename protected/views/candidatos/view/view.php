@@ -3,9 +3,13 @@ $this->breadcrumbs=array(
 	'Candidatos'=>array('/candidatos'),
 	$modelCandidato->NOME_CANDIDATO,
 );
+
+$nomeCandidato = ucwords(mb_strtolower($modelCandidato->NOME_CANDIDATO,"UTF-8"));
+
+$this->pageTitle .= " - ".$nomeCandidato;
 ?>
 
-<h1><?php echo ucwords(mb_strtolower($modelCandidato->NOME_CANDIDATO,"UTF-8")); ?></h1>
+<h1><?php echo $nomeCandidato; ?></h1>
 <?php
 
 $this->renderPartial(

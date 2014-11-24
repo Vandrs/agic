@@ -31,6 +31,15 @@ class SiteController extends Controller
 		// using the default layout 'protected/views/layouts/main.php'
 		$this->render('index');
 	}
+        
+        
+        public function actionSobre(){
+            $this->pageTitle = 'AGIC - Sobre o AGIC';
+            $this->layout='//layouts/column1';
+            $this->render('/site/sobre');
+        }
+        
+        
 
 	/**
 	 * This is the action to handle external exceptions.

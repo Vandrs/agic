@@ -42,6 +42,7 @@ class CandidatosController extends Controller
 	 */
 	public function actionCandidato($id)
 	{
+            $this->pageTitle = 'AGIC - Candidato';
             $twitter = new Twitter();
             $this->render('view/view',array(
                 'modelCandidato' => $this->loadModel($id),
@@ -54,6 +55,7 @@ class CandidatosController extends Controller
 	 */
 	public function actionIndex()
 	{
+                $this->pageTitle = 'AGIC - Candidatos';
 		$modelCandidato = new Candidato('search');
                 $modelCandidato->unsetAttributes();
                 if(isset($_GET['Candidato'])){
